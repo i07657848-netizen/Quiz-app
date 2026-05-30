@@ -1,0 +1,671 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quiz App</title>
+    
+    <style>
+        /* --- CSS START --- */
+        @import url('https://fonts.googleapis.com/css2?family=Gideon+Roman&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Roboto+Condensed:ital,wght@1,300&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Oswald:wght@300&display=swap');
+
+        *,
+        *::before,
+        *::after{
+            padding:0;
+            margin:0;
+            box-sizing:border-box;
+        }
+        :root{
+            --mode-color:#60bfbf;
+            --dot-color:white;
+            --txt:#fff;
+            --trans:rgba(0,0,0,.1);
+        }
+
+        *{
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        button{
+            display:block;
+            background:transparent;
+            border:0;
+            color:var(--txt);
+            cursor:pointer;
+        }
+        html{
+            align-items:center;
+            -webkit-box-align:center;
+        }
+        html,body{
+            font-size:18px;
+            height:100%;
+        }
+        body{
+            background:var(--mode-color);
+            width:100%;
+            position:relative;
+            max-height:700px;
+        }
+        section{
+            height:100%;
+            width:100%;
+            position:relative;
+            overflow:scroll;
+            z-index:5;
+            transition:left .5s;
+            -webkit-transition:left .5s;
+            background-color: var(--mode-color);
+            background-image:radial-gradient(var(--dot-color) 5px,transparent 5px);
+            background-image: -webkit-radial-gradient(var(--dot-color) 5px,transparent 5px);
+            background-size:2.5rem 2.5rem;
+        }
+        #main,#resultPg,#loadPg{
+            position:absolute;
+            top:0;
+            left:100%;
+            z-index:10;
+            display:none;
+        }
+        #loading1
+        {
+            width:200px;
+            height:200px;
+            position:absolute;
+            top:50%;
+            left:50%;
+            background:var(--mode-color);
+            box-shadow:0 0 0 1.5rem var(--mode-color);
+            margin-left:-100px;
+            margin-top:-100px;
+            border:9px solid var(--txt);
+            border-radius:50%;
+            border-top-color:var(--mode-color);
+            border-bottom-color:var(--mode-color);
+            animation: animate 3s linear infinite;
+        }
+        #loading2{
+            width:150px;
+            height:150px;
+            position:absolute;
+            top:50%;
+            left:50%;
+            margin-left:-75px;
+            margin-top:-75px;
+            border-radius:50%;
+            text-align:center;
+            border:8px solid var(--txt);
+            border-top-color:var(--mode-color);
+            border-bottom-color:var(--mode-color);
+            animation:animate 2s linear infinite ;
+            animation-delay:500ms;
+        }
+        #loading3{
+            width:100px;
+            height:100px;
+            position:absolute;
+            top:50%;
+            left:50%;
+            margin-left:-50px;
+            margin-top:-50px;
+            border-radius:50%;
+            text-align:center;
+            border:7px solid var(--txt);
+            border-top-color:var(--mode-color);
+            border-bottom-color:var(--mode-color);
+            animation:animate 2s linear infinite ;
+            animation-delay:1s;
+        }
+        #centr{
+            width:80px;
+            height:80px;
+            position:absolute;
+            left:50%;
+            top:50%;
+            margin:-40px 0 0 -40px;
+            text-align:center;
+            color:var(--txt);
+            font-size:1.3rem;
+            padding-top:.6rem;
+            letter-spacing:1px;
+            font-weight:bolder;
+            animation:blink 1.5s infinite linear;
+        }
+
+        @keyframes animate
+        {
+            0% { transform:rotate(0deg); }
+            100% { transform:rotate(360deg); }
+        }
+        @keyframes blink{
+            0%,1%,5%,10%,15%,30%{ opacity:0.4; }
+            3%,8%,13%,20%,100%{ opacity:1; }
+        }
+        .heading{
+            text-align:center;
+            font-size:3rem;
+            font-family: 'Gideon Roman', cursive;
+            font-weight:bolder;
+            background:var(--trans);
+            backdrop-filter:blur(10px);
+            -webkit-backdrop-filter:blur(10px);
+            padding:.4rem 0;
+            color:#f8f8f8;
+            margin:.6rem 1.5rem 1rem;
+            border-radius:.8rem;
+        }
+        #top{
+            height:1rem;
+            margin:3.2rem .8rem .25rem;
+            border:3px var(--txt) solid;
+            border-radius:1rem;
+            position:relative;
+            padding:.1rem;
+            font-weight:bold;
+            text-align:center;
+            background:var(--trans);
+            backdrop-filter:blur(8px);
+            -webkit-backdrop-filter:blur(8px);
+        }
+        #QNum{
+            width:3rem;
+            height:3rem;
+            background:var(--txt);
+            padding:.65rem 0;
+            font-size:1.5rem;
+            border-radius:50%;
+            position:absolute;
+            color:orange;
+            box-shadow:0 1px 4px #999;
+            z-index:5;
+            left:50%;
+            top:0%;
+            transform:translate(-50%,-92%);
+            -webkit-transform:translate(-50%,-92%)
+        }
+        #prog{
+            height:100%;
+            position:relative;
+            width:0;
+            left:0;
+            top:0;
+            border-radius:1rem;
+            background:var(--txt);
+            transition:width .3s;
+            -webkit-transition:width .3s;
+            z-index:3;
+        }
+        #top>span{
+            display:inline-block;
+            position:relative;
+            top:-2.8rem;
+            padding:.2rem .5rem ;
+            border-radius:.8rem;
+            margin:0 13%;
+            color:var(--txt);
+            font-size:1.4rem;
+            background:var(--trans);
+            backdrop-filter:blur(15px);
+            -webkit-backdrop-filter:blur(15px);
+        }
+        #queCont{
+            position:relative;
+            margin:1.3rem auto;
+            background:var(--txt);
+            padding:1.5rem 0 1rem;
+            width:90%;
+            box-shadow: 0 .8rem 1.8rem rgba(0, 41, 22, 0.4);
+            text-align:center;
+            font-family: 'Oswald', sans-serif;
+            border-radius:.4rem;
+            font-size:1.1rem;
+            overflow:hidden;
+        }
+        #que{
+            color:#444;
+            min-height:3rem;
+            padding:0 .8rem;
+        }
+        .opt{
+            width:85%;
+            background:#232323;
+            border-radius:3rem;
+            height:2.5rem;
+            margin:.75rem auto;
+            font-size:.85rem;
+        }
+        #chngBtn{
+            display:flex;
+            justify-content:space-between;
+            padding:.5rem 6%;
+        }
+        #chngBtn>button,#submit,.btn{
+            background:var(--txt);
+            width:4.5rem;
+            height:2.3rem;
+            color:black;
+            font-size:.9rem;
+            font-weight:bold;
+            box-shadow:0 .25rem .7rem rgba(0,24,41,.35);
+        }
+        #prev{ border-radius:2rem .3rem .3rem 2rem; padding-left:.5rem; }
+        #nxt{ border-radius:.3rem 2rem 2rem .3rem; padding-right:.5rem; }
+        #submit{ width:6rem; border-radius:2rem; margin:.2rem auto; display:block; }
+        
+        #resultBox{
+            width:80%;
+            background:var(--trans);
+            backdrop-filter:blur(8px);
+            -webkit-backdrop-filter:blur(8px);
+            text-align:center;
+            border-radius:.6rem;
+            margin:2.5rem auto 1rem;
+            word-spacing:.3rem;
+            color:var(--txt);
+            padding:.5rem 10% 1rem;
+            box-shadow: 0 .8rem 2rem rgba(0, 41, 22, 0.4);
+        }
+        #resultBox>p{ display: flex; justify-content: space-between; margin:1rem 0; }
+        
+        .btn{
+            padding:.8rem 1.5rem;
+            border-radius:3rem;
+            width:auto;
+            height:auto;
+            color:orange;
+            margin:2rem auto;
+            text-transform:uppercase;
+        }
+        #replay{ margin:3rem auto -1rem; }
+        .btnCont{ position:absolute; bottom:0; width:100%; text-align: center; }
+        #start{ padding:.8rem 2rem; font-size:1rem; display: inline-block; }
+        #mus{ width:3rem; height:3rem; padding:0; font-size:1.2rem; margin:1rem; display: inline-block; }
+        
+        #logo{
+            position:relative;
+            display:block;
+            margin:1rem auto 0;
+            width:95%;
+            height:auto;
+            box-shadow:0 .4rem .8rem rgba(0,24,41,.4);
+            border-radius:3rem .5rem 3rem .5rem;
+        }
+        #loadPg{ left:0; z-index:15; display:block; }
+        #mode{
+            position:absolute;
+            top:0;
+            right:0;
+            padding:0;
+            width:2.5rem;
+            height:2.5rem;
+            font-size:1rem;
+            margin:.7rem .7rem 0 0;
+            box-shadow:0 0 .8rem #555;
+            border-radius: 50%;
+        }
+        .light{ background:white; }
+        .dark{ background:#333; }
+        /* --- CSS END --- */
+    </style>
+</head> 
+<body>
+    <section id="loadPg">
+       <div id="loading1"></div>
+       <div id="loading2"></div>
+       <div id="loading3"></div>
+       <div id="centr">Quiz<br>App</div>
+    </section>
+
+    <section id="firstPg">
+       <h2 class="heading">Quiz App</h2>
+       <img id="logo" src="https://dl.dropbox.com/s/ywtlewlkg3rgicp/question-mark_1150-39362.jpg" alt="Logo">
+       <div class="btnCont">
+          <button class="btn" id="start">Start</button>
+          <button class="btn" id="mus">🎶</button>
+       </div>
+       <button class="btn dark" id="mode">🌙</button>
+    </section>
+    
+    <section id="main">
+       <div id="top">
+         <p id="QNum">1</p>
+         <div id="prog"></div>
+         <span>Quiz</span>
+         <span>App</span>
+       </div> 
+       <div id="queCont">
+          <div id="queWrap">
+             <p id="que">Loading question...</p>
+             <button class="opt"></button>
+             <button class="opt"></button>
+             <button class="opt"></button>
+             <button class="opt"></button>
+          </div>
+       </div>
+       <div id="chngBtn">
+          <button id="prev">Prev</button>
+          <button id="nxt">Next</button>
+       </div>
+       <button id="submit">SUBMIT</button>
+    </section>
+    
+    <section id="resultPg">
+       <h2 class="heading">QUIZ APP</h2>
+       <div id="resultBox">
+          <h2>RESULT</h2>
+          <p><b>Total</b><span>:</span><b id="ttl"></b></p>
+          <p><b>Attempted</b><span>:</span><b id="atmptd"></b></p>
+          <p><b>Correct</b><span>:</span><b id="crct"></b></p>
+          <p><b>Incorrect</b><span>:</span><b id="incrct"></b></p>
+       </div>
+       <button class="btn" id="replay">Replay</button>
+       <button class="btn" onclick="home()">Go to Home</button>
+    </section>
+
+    <audio id="audio" src="https://dl.dropbox.com/s/k6btbfr92sftbhj/faded_instrumental.mp3" loop></audio>
+
+    <script type="text/javascript">
+        alert("Write your scores in the comments....");
+        
+        var mode = document.querySelector("#mode"),
+            mus = document.querySelector("#mus"),
+            audio = document.querySelector("#audio"),
+            loadPg = document.querySelector("#loadPg"),
+            firstPg = document.querySelector("#firstPg"),
+            start = document.querySelector("#start"),
+            replay = document.querySelector("#replay"),
+            incrct = document.querySelector("#incrct"),
+            crct = document.querySelector("#crct"),
+            atmptd = document.querySelector("#atmptd"),
+            main = document.querySelector("#main"),
+            resultPg = document.querySelector("#resultPg"),
+            queWrap = document.querySelector("#queWrap"),
+            progress = document.querySelector("#prog"),
+            qNum = document.querySelector("#QNum"),
+            nxt = document.querySelector("#nxt"),
+            prev = document.querySelector("#prev"),
+            que = document.querySelector("#que"),
+            opt = document.querySelectorAll(".opt"),
+            root = document.querySelector(":root"),
+            body = document.body;
+
+        const ques = [
+            { question: "cot(180°) = ?", opt1: "0", opt2: "1", opt3: "undefined", opt4: "1/2", ans: "undefined" },
+            { question: "Who invented electromagnets ?", opt1: "Albert Einstein", opt2: "Benjamin Franklin", opt3: "Michael Faraday", opt4: "S.N. Bose", ans: "Michael Faraday" },
+            { question: "Which is the largest animal in the world ?", opt1: "Elephant", opt2: "Giraffe", opt3: "Dinosaur", opt4: "Blue whale", ans: "Blue whale" },
+            { question: "How many bones are there in the skull ?", opt1: "22", opt2: "30", opt3: "24", opt4: "19", ans: "22" },
+            { question: "When did the rule of East India Company ended in India ?", opt1: "1856", opt2: "1906", opt3: "1858", opt4: "1947", ans: "1858" },
+            { question: "When America get Independent ?", opt1: "Fifth of June", opt2: "Fourth of June", opt3: "First of July", opt4: "Fourth of July", ans: "Fourth of July" },
+            { question: "Which planet is known as blue planet ?", opt1: "Mercury", opt2: "Earth", opt3: "Mars", opt4: "Neptune", ans: "Earth" },
+            { question: "Which is the highest statue in the world ?", opt1: "Statue of Liberty", opt2: "The Motherland calls", opt3: "Statue of Unity", opt4: "Christ the Redeemer", ans: "Statue of Unity" },
+            { question: "What is the first metal to be discovered by man ?", opt1: "Bronze", opt2: "Iron", opt3: "Copper", opt4: "Mercury", ans: "Copper" },
+            { question: "Which bird's egg is the largest egg ?", opt1: "Kiwi", opt2: "Ostrich", opt3: "Sparrow", opt4: "Peacock", ans: "Ostrich" },
+            { question: "Why does the sky appear to be blue in day ?", opt1: "Reflection of light", opt2: "Refraction of light", opt3: "Scattering of light", opt4: "None of these", ans: "Scattering of light" },
+            { question: "What is the SI unit of Electric current ?", opt1: "ampere", opt2: "volt", opt3: "mole", opt4: "metre", ans: "ampere" },
+            { question: "What is the formula of force ?", opt1: "Mass/Acceleration", opt2: "Mass*Acceleration", opt3: "Mass*Gravity", opt4: "Gravity/Mass", ans: "Mass*Acceleration" },
+            { question: "0! × 1! × 2! × 3! = ?", opt1: "6", opt2: "12", opt3: "0", opt4: "24", ans: "12" },
+            { question: "What is the freezing point of Water?", opt1: "100°C", opt2: "500°C", opt3: "400°C", opt4: "0°C", ans: "0°C" },
+    { question: "Which is the longest river in the world?", opt1: "Amazon", opt2: "Nile", opt3: "Ganga", opt4: "Yangtze", ans: "Nile" },
+    { question: "Which gas do plants absorb from the atmosphere?", opt1: "Oxygen", opt2: "Nitrogen", opt3: "Carbon Dioxide", opt4: "Hydrogen", ans: "Carbon Dioxide" },
+    { question: "What is the capital of Japan?", opt1: "Seoul", opt2: "Beijing", opt3: "Tokyo", opt4: "Bangkok", ans: "Tokyo" },
+    { question: "Who wrote 'Romeo and Juliet'?", opt1: "Charles Dickens", opt2: "William Shakespeare", opt3: "Mark Twain", opt4: "Leo Tolstoy", ans: "William Shakespeare" },
+    { question: "Which planet is the smallest in our solar system?", opt1: "Venus", opt2: "Mars", opt3: "Mercury", opt4: "Jupiter", ans: "Mercury" },
+    { question: "What is the chemical symbol for Gold?", opt1: "Gd", opt2: "Ag", opt3: "Au", opt4: "Fe", ans: "Au" },
+    { question: "Which country is known as the Land of the Rising Sun?", opt1: "China", opt2: "Japan", opt3: "Thailand", opt4: "India", ans: "Japan" },
+    { question: "How many continents are there on Earth?", opt1: "5", opt2: "6", opt3: "7", opt4: "8", ans: "7" },
+    { question: "What is the boiling point of water?", opt1: "90°C", opt2: "100°C", opt3: "110°C", opt4: "120°C", ans: "100°C" },
+    { question: "Which is the largest ocean on Earth?", opt1: "Atlantic", opt2: "Indian", opt3: "Pacific", opt4: "Arctic", ans: "Pacific" },
+    { question: "Who was the first man to step on the Moon?", opt1: "Yuri Gagarin", opt2: "Neil Armstrong", opt3: "Buzz Aldrin", opt4: "Elon Musk", ans: "Neil Armstrong" },
+    { question: "Which organ pumps blood in the human body?", opt1: "Lungs", opt2: "Brain", opt3: "Heart", opt4: "Kidney", ans: "Heart" },
+    { question: "What is the currency of USA?", opt1: "Euro", opt2: "Pound", opt3: "Dollar", opt4: "Yen", ans: "Dollar" },
+    { question: "Which is the fastest land animal?", opt1: "Lion", opt2: "Tiger", opt3: "Cheetah", opt4: "Horse", ans: "Cheetah" },
+    { question: "How many colors are there in a rainbow?", opt1: "5", opt2: "6", opt3: "7", opt4: "8", ans: "7" },
+    { question: "Who is known as the Iron Man of India?", opt1: "Sardar Patel", opt2: "Gandhiji", opt3: "Nehru", opt4: "Bose", ans: "Sardar Patel" },
+    { question: "What is the square root of 64?", opt1: "6", opt2: "7", opt3: "8", opt4: "9", ans: "8" },
+    { question: "Which gas is most abundant in Earth's atmosphere?", opt1: "Oxygen", opt2: "Hydrogen", opt3: "Nitrogen", opt4: "Argon", ans: "Nitrogen" },
+    { question: "Which is the smallest country in the world?", opt1: "Monaco", opt2: "Vatican City", opt3: "Maldives", opt4: "Malta", ans: "Vatican City" },
+    { question: "Who discovered Penicillin?", opt1: "Fleming", opt2: "Newton", opt3: "Pasteur", opt4: "Curie", ans: "Fleming" },
+    { question: "What is the National Animal of India?", opt1: "Lion", opt2: "Elephant", opt3: "Tiger", opt4: "Leopard", ans: "Tiger" },
+    { question: "Which element has the atomic number 1?", opt1: "Helium", opt2: "Hydrogen", opt3: "Carbon", opt4: "Oxygen", ans: "Hydrogen" },
+    { question: "In which year did Titanic sink?", opt1: "1910", opt2: "1912", opt3: "1914", opt4: "1916", ans: "1912" },
+    { question: "Which is the largest desert in the world?", opt1: "Sahara", opt2: "Gobi", opt3: "Antarctic", opt4: "Thar", ans: "Antarctic" },
+    { question: "Who is the author of 'Harry Potter'?", opt1: "Rowling", opt2: "King", opt3: "Dahl", opt4: "Orwell", ans: "Rowling" },
+    { question: "Which is the hardest natural substance?", opt1: "Gold", opt2: "Iron", opt3: "Diamond", opt4: "Platinum", ans: "Diamond" },
+    { question: "What is the capital of France?", opt1: "Berlin", opt2: "Madrid", opt3: "Paris", opt4: "Rome", ans: "Paris" },
+    { question: "How many legs does a spider have?", opt1: "6", opt2: "8", opt3: "10", opt4: "12", ans: "8" },
+    { question: "Which part of the plant does photosynthesis?", opt1: "Root", opt2: "Stem", opt3: "Leaf", opt4: "Flower", ans: "Leaf" },
+    { question: "What is the chemical formula for water?", opt1: "CO2", opt2: "H2O", opt3: "O2", opt4: "NaCl", ans: "H2O" },
+    { question: "Who painted the Mona Lisa?", opt1: "Van Gogh", opt2: "Picasso", opt3: "Da Vinci", opt4: "Monet", ans: "Da Vinci" },
+    { question: "Festival known as the 'Festival of Colors'?", opt1: "Diwali", opt2: "Holi", opt3: "Eid", opt4: "Christmas", ans: "Holi" },
+    { question: "Which is the largest bone in the human body?", opt1: "Tibia", opt2: "Femur", opt3: "Skull", opt4: "Humerus", ans: "Femur" },
+    { question: "Who is the 'Father of Computers'?", opt1: "Gates", opt2: "Babbage", opt3: "Jobs", opt4: "Turing", ans: "Babbage" },
+    { question: "What is the brain of the computer?", opt1: "RAM", opt2: "CPU", opt3: "HDD", opt4: "Monitor", ans: "CPU" },
+    { question: "Which country won the first FIFA World Cup?", opt1: "Brazil", opt2: "Germany", opt3: "Uruguay", opt4: "Argentina", ans: "Uruguay" },
+    { question: "What is the capital of Australia?", opt1: "Sydney", opt2: "Melbourne", opt3: "Canberra", opt4: "Perth", ans: "Canberra" },
+    { question: "How many months have 31 days?", opt1: "5", opt2: "6", opt3: "7", opt4: "8", ans: "7" },
+    { question: "Which is the tallest building in the world?", opt1: "Burj Khalifa", opt2: "Shanghai Tower", opt3: "Empire State", opt4: "Eiffel", ans: "Burj Khalifa" },
+    { question: "Language used by computers to process data?", opt1: "English", opt2: "Binary", opt3: "French", opt4: "Hindi", ans: "Binary" },
+    { question: "What is the capital of India?", opt1: "Mumbai", opt2: "Kolkata", opt3: "New Delhi", opt4: "Chennai", ans: "New Delhi" },
+    { question: "Animal known as 'Ship of the Desert'?", opt1: "Horse", opt2: "Camel", opt3: "Donkey", opt4: "Elephant", ans: "Camel" },
+    { question: "How many players in a Cricket team?", opt1: "9", opt2: "10", opt3: "11", opt4: "12", ans: "11" },
+    { question: "What is the national fruit of India?", opt1: "Apple", opt2: "Banana", opt3: "Mango", opt4: "Grapes", ans: "Mango" },
+    { question: "Which is the largest planet?", opt1: "Saturn", opt2: "Earth", opt3: "Jupiter", opt4: "Neptune", ans: "Jupiter" },
+    { question: "Who invented the light bulb?", opt1: "Edison", opt2: "Bell", opt3: "Tesla", opt4: "Einstein", ans: "Edison" },
+    { question: "Which is the smallest continent?", opt1: "Europe", opt2: "Africa", opt3: "Australia", opt4: "Antarctica", ans: "Australia" },
+    { question: "What is the capital of Russia?", opt1: "St. Petersburg", opt2: "Moscow", opt3: "Kiev", opt4: "Berlin", ans: "Moscow" },
+    { question: "Which gas is used in soda drinks?", opt1: "Oxygen", opt2: "Hydrogen", opt3: "Carbon Dioxide", opt4: "Nitrogen", ans: "Carbon Dioxide" },
+    { question: "Who was the first President of India?", opt1: "Prasad", opt2: "Radhakrishnan", opt3: "Husain", opt4: "Giri", ans: "Prasad" },
+    { question: "What is the color of an Emerald?", opt1: "Red", opt2: "Blue", opt3: "Green", opt4: "Yellow", ans: "Green" },
+    { question: "Most spoken language in the world?", opt1: "English", opt2: "Mandarin", opt3: "Spanish", opt4: "Hindi", ans: "English" },
+    { question: "What is the Roman numeral for 50?", opt1: "V", opt2: "X", opt3: "L", opt4: "C", ans: "L" },
+    { question: "State known as 'Tea Garden of India'?", opt1: "Kerala", opt2: "Assam", opt3: "Sikkim", opt4: "Bihar", ans: "Assam" },
+    { question: "Who invented the Telephone?", opt1: "Bell", opt2: "Newton", opt3: "Watt", opt4: "Baird", ans: "Bell" },
+    { question: "Which is the largest bird in the world?", opt1: "Eagle", opt2: "Peacock", opt3: "Ostrich", opt4: "Emu", ans: "Ostrich" },
+    { question: "What is the currency of United Kingdom?", opt1: "Euro", opt2: "Dollar", opt3: "Pound", opt4: "Franc", ans: "Pound" },
+    { question: "Which is the nearest star to Earth?", opt1: "Proxima", opt2: "Sirius", opt3: "Sun", opt4: "Vega", ans: "Sun" },
+    { question: "How many teeth does an adult human have?", opt1: "28", opt2: "30", opt3: "32", opt4: "34", ans: "32" },
+    { question: "What is the capital of Italy?", opt1: "Venice", opt2: "Florence", opt3: "Rome", opt4: "Milan", ans: "Rome" },
+    { question: "Which ocean is S-shaped?", opt1: "Pacific", opt2: "Atlantic", opt3: "Indian", opt4: "Arctic", ans: "Atlantic" },
+    { question: "Who is known as 'Flying Sikh'?", opt1: "Milkha Singh", opt2: "Harbhajan", opt3: "Yuvraj", opt4: "Manmohan", ans: "Milkha Singh" },
+    { question: "What is the study of birds called?", opt1: "Biology", opt2: "Ornithology", opt3: "Zoology", opt4: "Entomology", ans: "Ornithology" },
+    { question: "Instrument used to measure temperature?", opt1: "Barometer", opt2: "Thermometer", opt3: "Ammeter", opt4: "Speedometer", ans: "Thermometer" },
+    { question: "Which planet has the most moons?", opt1: "Jupiter", opt2: "Saturn", opt3: "Uranus", opt4: "Mars", ans: "Saturn" },
+    { question: "What is the capital of South Korea?", opt1: "Busan", opt2: "Seoul", opt3: "Incheon", opt4: "Pyongyang", ans: "Seoul" },
+    { question: "Who founded the Brahmo Samaj?", opt1: "Vivekananda", opt2: "Roy", opt3: "Saraswati", opt4: "Vidyasagar", ans: "Roy" },
+    { question: "What is the chemical symbol for Silver?", opt1: "Si", opt2: "Ag", opt3: "Au", opt4: "Sl", ans: "Ag" },
+    { question: "State of India with longest coastline?", opt1: "Maharashtra", opt2: "Tamil Nadu", opt3: "Gujarat", opt4: "Andhra", ans: "Gujarat" },
+    { question: "How many seconds in one hour?", opt1: "60", opt2: "360", opt3: "3600", opt4: "600", ans: "3600" },
+    { question: "What is the national game of India?", opt1: "Cricket", opt2: "Football", opt3: "Hockey", opt4: "Kabaddi", ans: "Hockey" },
+    { question: "Which acid is present in lemons?", opt1: "Citric", opt2: "Acetic", opt3: "Tartaric", opt4: "Lactic", ans: "Citric" },
+    { question: "First woman Prime Minister of India?", opt1: "Pratibha", opt2: "Indira Gandhi", opt3: "Sonia", opt4: "Sarojini", ans: "Indira Gandhi" },
+    { question: "What is the capital of Germany?", opt1: "Munich", opt2: "Frankfurt", opt3: "Berlin", opt4: "Hamburg", ans: "Berlin" },
+    { question: "Which is the largest country by area?", opt1: "Canada", opt2: "USA", opt3: "Russia", opt4: "China", ans: "Russia" },
+    { question: "What is the pH value of pure water?", opt1: "5", opt2: "6", opt3: "7", opt4: "8", ans: "7" },
+    { question: "How many bytes in one kilobyte (KB)?", opt1: "1000", opt2: "1024", opt3: "1050", opt4: "1200", ans: "1024" },
+    { question: "Who discovered Gravity?", opt1: "Einstein", opt2: "Newton", opt3: "Galileo", opt4: "Hawking", ans: "Newton" },
+    { question: "What is the capital of Canada?", opt1: "Toronto", opt2: "Vancouver", opt3: "Ottawa", opt4: "Montreal", ans: "Ottawa" },
+    { question: "Which is the tallest animal?", opt1: "Elephant", opt2: "Giraffe", opt3: "Ostrich", opt4: "Camel", ans: "Giraffe" },
+    { question: "How many bones in the human ear?", opt1: "1", opt2: "2", opt3: "3", opt4: "4", ans: "3" },
+    { question: "Which gas do humans breathe to survive?", opt1: "Nitrogen", opt2: "Oxygen", opt3: "CO2", opt4: "Helium", ans: "Oxygen" },
+    { question: "What is the capital of China?", opt1: "Shanghai", opt2: "Beijing", opt3: "Guangzhou", opt4: "Shenzhen", ans: "Beijing" },
+    { question: "Which organ filters blood in the body?", opt1: "Heart", opt2: "Lungs", opt3: "Kidneys", opt4: "Liver", ans: "Kidneys" },
+    { question: "Who wrote the Indian National Anthem?", opt1: "Chattopadhyay", opt2: "Tagore", opt3: "Naidu", opt4: "Mangeshkar", ans: "Tagore" },
+    { question: "Which planet is the 'Red Planet'?", opt1: "Mars", opt2: "Jupiter", opt3: "Venus", opt4: "Saturn", ans: "Mars" },
+    { question: "Primary source of energy for Earth?", opt1: "Moon", opt2: "Stars", opt3: "Sun", opt4: "Wind", ans: "Sun" },
+    { question: "How many states in India?", opt1: "27", opt2: "28", opt3: "29", opt4: "30", ans: "28" },
+    { question: "Largest flower in the world?", opt1: "Lotus", opt2: "Rafflesia", opt3: "Sunflower", opt4: "Rose", ans: "Rafflesia" },
+    { question: "What is the capital of Spain?", opt1: "Barcelona", opt2: "Seville", opt3: "Madrid", opt4: "Valencia", ans: "Madrid" },
+    { question: "Metal that is liquid at room temperature?", opt1: "Iron", opt2: "Copper", opt3: "Mercury", opt4: "Silver", ans: "Mercury" },
+    { question: "Who is the 'Father of the Nation' (India)?", opt1: "Bose", opt2: "Gandhiji", opt3: "Nehru", opt4: "Bhagat Singh", ans: "Gandhiji" },
+    { question: "Which is the smallest bird?", opt1: "Sparrow", opt2: "Hummingbird", opt3: "Parrot", opt4: "Kiwi", ans: "Hummingbird" },
+    { question: "Main component of natural gas?", opt1: "Ethane", opt2: "Propane", opt3: "Methane", opt4: "Butane", ans: "Methane" },
+    { question: "Which city is known as 'Pink City'?", opt1: "Jodhpur", opt2: "Udaipur", opt3: "Jaipur", opt4: "Bikaner", ans: "Jaipur" },
+    { question: "Boiling point of water in Fahrenheit?", opt1: "100°F", opt2: "200°F", opt3: "212°F", opt4: "312°F", ans: "212°F" },
+    { question: "Largest continent by population?", opt1: "Africa", opt2: "Europe", opt3: "Asia", opt4: "America", ans: "Asia" },
+    { question: "First woman to win a Nobel Prize?", opt1: "Teresa", opt2: "Curie", opt3: "Malala", opt4: "Gandhi", ans: "Curie" },
+    { question: "What is the capital of Egypt?", opt1: "Alexandria", opt2: "Cairo", opt3: "Giza", opt4: "Luxor", ans: "Cairo" },
+    { question: "Vitamin obtained from Sunlight?", opt1: "Vit A", opt2: "Vit B", opt3: "Vit C", opt4: "Vit D", ans: "Vit D" },
+        { question: "Which company developed the Java programming language?", opt1: "Microsoft", opt2: "Sun Microsystems", opt3: "Google", opt4: "Apple", ans: "Sun Microsystems" },
+    { question: "What is the full form of RAM?", opt1: "Read Access Memory", opt2: "Random Access Memory", opt3: "Run Access Memory", opt4: "Real Access Memory", ans: "Random Access Memory" },
+    { question: "Which layer of Earth's atmosphere contains the Ozone layer?", opt1: "Troposphere", opt2: "Stratosphere", opt3: "Mesosphere", opt4: "Exosphere", ans: "Stratosphere" },
+    { question: "Who was the first person to reach the South Pole?", opt1: "Robert Peary", opt2: "Roald Amundsen", opt3: "James Cook", opt4: "Vasco da Gama", ans: "Roald Amundsen" },
+    { question: "What is the capital of Brazil?", opt1: "Rio de Janeiro", opt2: "Brasilia", opt3: "Sao Paulo", opt4: "Salvador", ans: "Brasilia" },
+    { question: "Which is the most sensitive organ in our body?", opt1: "Eyes", opt2: "Ears", opt3: "Skin", opt4: "Nose", ans: "Skin" },
+    { question: "Who is known as the 'Wizard of Hockey'?", opt1: "Dhyan Chand", opt2: "Balbir Singh", opt3: "Dhanraj Pillay", opt4: "Sardara Singh", ans: "Dhyan Chand" },
+    { question: "Which planet is known as the 'Morning Star'?", opt1: "Mars", opt2: "Venus", opt3: "Mercury", opt4: "Saturn", ans: "Venus" },
+    { question: "What is the chemical symbol for Iron?", opt1: "Ir", opt2: "In", opt3: "Fe", opt4: "Au", ans: "Fe" },
+    { question: "Which bank is known as the 'Banker's Bank of India'?", opt1: "SBI", opt2: "PNB", opt3: "RBI", opt4: "ICICI", ans: "RBI" },
+    { question: "What is the standard size of a Cricket pitch?", opt1: "20 yards", opt2: "22 yards", opt3: "24 yards", opt4: "26 yards", ans: "22 yards" },
+    { question: "Who was the first Indian to win a Nobel Prize?", opt1: "C.V. Raman", opt2: "Rabindranath Tagore", opt3: "Mother Teresa", opt4: "Hargobind Khorana", ans: "Rabindranath Tagore" },
+    { question: "Which is the largest internal organ in the human body?", opt1: "Heart", opt2: "Lungs", opt3: "Liver", opt4: "Kidneys", ans: "Liver" },
+    { question: "What is the capital of Thailand?", opt1: "Phuket", opt2: "Pattaya", opt3: "Bangkok", opt4: "Chiang Mai", ans: "Bangkok" },
+    { question: "Which gas is used to extinguish fires?", opt1: "Oxygen", opt2: "Nitrogen", opt3: "Carbon Dioxide", opt4: "Helium", ans: "Carbon Dioxide" },
+    { question: "Who is the developer of the Python language?", opt1: "Dennis Ritchie", opt2: "Guido van Rossum", opt3: "Bjarne Stroustrup", opt4: "James Gosling", ans: "Guido van Rossum" },
+    { question: "Which is the deepest ocean in the world?", opt1: "Atlantic", opt2: "Indian", opt3: "Pacific", opt4: "Arctic", ans: "Pacific" },
+    { question: "What is the value of 'Pi' up to two decimal places?", opt1: "3.12", opt2: "3.14", opt3: "3.16", opt4: "3.18", ans: "3.14" },
+    { question: "Which country is the largest producer of coffee?", opt1: "India", opt2: "Vietnam", opt3: "Brazil", opt4: "Colombia", ans: "Brazil" },
+    { question: "Who wrote the famous book 'Discovery of India'?", opt1: "Mahatma Gandhi", opt2: "Jawaharlal Nehru", opt3: "Subhash Chandra Bose", opt4: "Lal Bahadur Shastri", ans: "Jawaharlal Nehru" },
+    { question: "What is the SI unit of Force?", opt1: "Joule", opt2: "Watt", opt3: "Newton", opt4: "Pascal", ans: "Newton" },
+    { question: "Which acid is found in Ants?", opt1: "Citric Acid", opt2: "Formic Acid", opt3: "Lactic Acid", opt4: "Oxalic Acid", ans: "Formic Acid" },
+    { question: "Which city is known as the 'Silicon Valley of India'?", opt1: "Hyderabad", opt2: "Pune", opt3: "Bengaluru", opt4: "Chennai", ans: "Bengaluru" },
+    { question: "How many bits make one byte?", opt1: "4", opt2: "8", opt3: "16", opt4: "32", ans: "8" },
+    { question: "Who was the first woman to go into space?", opt1: "Sally Ride", opt2: "Valentina Tereshkova", opt3: "Kalpana Chawla", opt4: "Sunita Williams", ans: "Valentina Tereshkova" },
+    { question: "What is the capital of South Africa?", opt1: "Cape Town", opt2: "Pretoria", opt3: "Bloemfontein", opt4: "All of these", ans: "All of these" },
+    { question: "Which is the largest freshwater lake in the world?", opt1: "Lake Victoria", opt2: "Lake Superior", opt3: "Caspian Sea", opt4: "Lake Baikal", ans: "Lake Superior" },
+    { question: "Who is known as the 'Lady with the Lamp'?", opt1: "Sarojini Naidu", opt2: "Mother Teresa", opt3: "Florence Nightingale", opt4: "Annie Besant", ans: "Florence Nightingale" },
+    { question: "Which is the national flower of India?", opt1: "Rose", opt2: "Lotus", opt3: "Jasmine", opt4: "Marigold", ans: "Lotus" },
+    { question: "What is the chemical name of Common Salt?", opt1: "Sodium Chloride", opt2: "Sodium Bicarbonate", opt3: "Calcium Carbonate", opt4: "Potassium Chloride", ans: "Sodium Chloride" },
+    { question: "Which planet is known as the 'Blue Planet'?", opt1: "Venus", opt2: "Mars", opt3: "Earth", opt4: "Neptune", ans: "Earth" },
+    { question: "Who is the author of 'Wings of Fire'?", opt1: "A.P.J. Abdul Kalam", opt2: "Arundhati Roy", opt3: "Chetan Bhagat", opt4: "Vikram Seth", ans: "A.P.J. Abdul Kalam" },
+    { question: "Which instrument is used to measure blood pressure?", opt1: "Thermometer", opt2: "Sphygmomanometer", opt3: "Barometer", opt4: "Stethoscope", ans: "Sphygmomanometer" },
+    { question: "What is the capital of Bhutan?", opt1: "Thimphu", opt2: "Paro", opt3: "Punakha", opt4: "Jakar", ans: "Thimphu" },
+    { question: "How many players are there in a Basketball team?", opt1: "5", opt2: "7", opt3: "9", opt4: "11", ans: "5" },
+    { question: "Which is the longest bone in the human body?", opt1: "Stapes", opt2: "Femur", opt3: "Humerus", opt4: "Fibula", ans: "Femur" },
+    { question: "Who invented the World Wide Web (WWW)?", opt1: "Bill Gates", opt2: "Steve Jobs", opt3: "Tim Berners-Lee", opt4: "Larry Page", ans: "Tim Berners-Lee" },
+    { question: "Which state is known as the 'Spice Garden of India'?", opt1: "Karnataka", opt2: "Kerala", opt3: "Tamil Nadu", opt4: "Assam", ans: "Kerala" },
+    { question: "What is the full form of PDF?", opt1: "Personal Document File", opt2: "Portable Document Format", opt3: "Printable Data File", opt4: "Port Data Format", ans: "Portable Document Format" },
+    { question: "Who was the first woman Governor of an Indian State?", opt1: "Indira Gandhi", opt2: "Sarojini Naidu", opt3: "Sushma Swaraj", opt4: "Pratibha Patil", ans: "Sarojini Naidu" },
+    { question: "Which metal is the best conductor of electricity?", opt1: "Gold", opt2: "Copper", opt3: "Silver", opt4: "Aluminum", ans: "Silver" },
+    { question: "What is the capital of Turkey?", opt1: "Istanbul", opt2: "Ankara", opt3: "Antalya", opt4: "Izmir", ans: "Ankara" },
+    { question: "Which gas is filled in electric bulbs?", opt1: "Oxygen", opt2: "Hydrogen", opt3: "Nitrogen", opt4: "Argon", ans: "Argon" },
+    { question: "Who is the founder of Microsoft?", opt1: "Steve Jobs", opt2: "Bill Gates", opt3: "Jeff Bezos", opt4: "Mark Zuckerberg", ans: "Bill Gates" },
+    { question: "Which is the tallest waterfall in the world?", opt1: "Niagara Falls", opt2: "Angel Falls", opt3: "Victoria Falls", opt4: "Iguazu Falls", ans: "Angel Falls" },
+    { question: "What is the national heritage animal of India?", opt1: "Tiger", opt2: "Lion", opt3: "Elephant", opt4: "Horse", ans: "Elephant" },
+    { question: "Which element is common to all acids?", opt1: "Oxygen", opt2: "Hydrogen", opt3: "Nitrogen", opt4: "Sulphur", ans: "Hydrogen" },
+    { question: "Who was the first Indian woman to climb Mt. Everest?", opt1: "Bachendri Pal", opt2: "Santosh Yadav", opt3: "Arunima Sinha", opt4: "Premlata Agrawal", ans: "Bachendri Pal" },
+    { question: "What is the currency of Japan?", opt1: "Yuan", opt2: "Yen", opt3: "Won", opt4: "Ringgit", ans: "Yen" },
+    { question: "Which is the largest library in the world?", opt1: "British Library", opt2: "Library of Congress", opt3: "National Library of China", opt4: "Russian State Library", ans: "Library of Congress" }
+];
+
+        var selections = new Array(ques.length).fill(" ");
+        var n = 0;
+
+        function showQuestion(index) {
+            qNum.innerHTML = index + 1;
+            progress.style.width = ((index + 1) / ques.length * 100) + "%";
+            que.innerHTML = ques[index].question;
+            
+            for (let i = 0; i < opt.length; i++) {
+                opt[i].innerHTML = ques[index]["opt" + (i + 1)];
+                opt[i].style.background = "#232323";
+                if (selections[index] === opt[i].innerHTML) {
+                    opt[i].style.background = "orange";
+                }
+            }
+        }
+
+        nxt.addEventListener("click", function() {
+            if (n < ques.length - 1) { n++; showQuestion(n); }
+            if(navigator.vibrate) navigator.vibrate(50);
+        });
+
+        prev.addEventListener("click", function() {
+            if (n > 0) { n--; showQuestion(n); }
+            if(navigator.vibrate) navigator.vibrate(50);
+        });
+
+        opt.forEach(button => {
+            button.addEventListener("click", function() {
+                selections[n] = this.innerHTML;
+                opt.forEach(b => b.style.background = "#232323");
+                this.style.background = "orange";
+            });
+        });
+
+        document.getElementById("submit").addEventListener("click", function() {
+            let correctCount = 0, attemptedCount = 0;
+            selections.forEach((sel, i) => {
+                if (sel !== " ") {
+                    attemptedCount++;
+                    if (sel === ques[i].ans) correctCount++;
+                }
+            });
+            crct.innerHTML = correctCount;
+            incrct.innerHTML = attemptedCount - correctCount;
+            atmptd.innerHTML = attemptedCount;
+            
+            // AUTOMATIC TOTAL QUESTIONS SET KARNE KE LIYE YEH LINE ADD KI HAI
+            document.getElementById("ttl").innerHTML = ques.length; 
+            
+            main.style.display = "none";
+            resultPg.style.display = "block";
+            setTimeout(() => resultPg.style.left = "0", 10);
+        });
+
+        function rplay() {
+            selections.fill(" ");
+            n = 0;
+            showQuestion(0);
+            resultPg.style.left = "100%";
+            setTimeout(() => {
+                resultPg.style.display = "none";
+                main.style.display = "block";
+            }, 500);
+        }
+
+        replay.addEventListener("click", rplay);
+
+        start.addEventListener("click", function() {
+            main.style.display = "block";
+            setTimeout(() => {
+                main.style.left = "0";
+                firstPg.style.display = "none";
+            }, 10);
+            showQuestion(0);
+        });
+
+        function home() {
+            firstPg.style.display = "block";
+            resultPg.style.left = "100%";
+            setTimeout(() => resultPg.style.display = "none", 500);
+        }
+
+        mus.addEventListener("click", function() {
+            if (audio.paused) { audio.play(); mus.style.background = "#ffa"; }
+            else { audio.pause(); mus.style.background = "var(--txt)"; }
+        });
+
+        mode.addEventListener("click", function() {
+            if (mode.classList.contains("dark")) {
+                root.style.setProperty("--mode-color", "#013");
+                root.style.setProperty("--dot-color", "#308a8a");
+                mode.className = "btn light";
+                mode.innerHTML = "🔆";
+            } else {
+                root.style.setProperty("--mode-color", "#60bfbf");
+                root.style.setProperty("--dot-color", "white");
+                mode.className = "btn dark";
+                mode.innerHTML = "🌙";
+            }
+        });
+
+        setTimeout(() => {
+            loadPg.style.left = "-100%";
+            setTimeout(() => loadPg.style.display = "none", 500);
+        }, 3000);
+    </script>
+</body>
+</html>
