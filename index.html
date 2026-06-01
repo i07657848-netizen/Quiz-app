@@ -1,14 +1,22 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <title>Netizen Quiz App</title>
-    <meta name="google-site-verification" content="MYYkQbvhjSYMvS0ZRstYgJcN8t2Z7eeEK5gGfA_8F78" />
+        <title>Netizen Quiz App</title>
+    <meta name="google-site-verification" content="W">
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="author" content="Jeet Kumar">
-
     
-    <style>
+    <script>
+        window.addEventListener('DOMContentLoaded', () => {
+            const container = document.querySelector('.quiz-container') || document.body;
+            const nameTag = document.createElement('p');
+            nameTag.innerHTML = 'Created by Jeet Kumar';
+            nameTag.style.cssText = 'text-align: center; font-weight: bold; color: #555; margin-top: 10px; font-size: 16px;';
+            container.insertBefore(nameTag, container.firstChild);
+        });
+    </script>
+
         /* --- CSS START --- */
         @import url('https://fonts.googleapis.com/css2?family=Gideon+Roman&display=swap');
         @import url('https://fonts.googleapis.com/css2?family=Roboto+Condensed:ital,wght@1,300&display=swap');
